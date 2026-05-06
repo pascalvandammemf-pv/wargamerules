@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WargameRules — Référence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════
+   CATALOGUE_JEUX — Modifier cette constante
+══════════════════════════════════════════════════ */
+/* VOIR SCRIPT ci-dessous */
+
+:root {
+  --bg:      #f5f2eb;
+  --bg2:     #edeae0;
+  --bg3:     #e4e0d4;
+  --bg4:     #d8d4c8;
+  --border:  #c8c2b0;
+  --border2: #a09880;
+  --gold:    #8a6e20;
+  --gold2:   #6b5218;
+  --gold3:   #4a3810;
+  --red:     #c0392b;
+  --text:    #1a1a14;
+  --text2:   #2e2e22;
+  --text3:   #6a6458;
+  --sidebar: 270px;
+  --font-t:  'Oswald', sans-serif;
+  --font-b:  'Source Serif 4', serif;
+  --font-m:  'Share Tech Mono', monospace;
+}
+body.dark {
+  --bg:      #2a2e2a; --bg2: #333730; --bg3: #3c4038; --bg4: #454940;
+  --border:  #585e50; --border2: #78806a;
+  --gold:    #c8a840; --gold2: #e0c060; --gold3: #f0d880;
+  --text:    #e8e4d0; --text2: #c0b898; --text3: #888070;
+}
+
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-b);
+  font-size: 15px;
+  line-height: 1.65;
+  overflow: hidden;
+}
+
+/* Grain overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.4;
+}
+
+/* ── ACCESS SCREEN ── */
+#access-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 8000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: fadeIn 0.4s ease;
+}
+
+#access-screen.hidden { display: none; }
+
+.access-box {
+  width: 100%;
+  max-width: 400px;
+  border: 1px solid var(--gold);
+  background: var(--bg2);
+  box-shadow: 0 0 60px rgba(200,160,64,0.12), inset 0 1px 0 rgba(200,160,64,0.1);
+  padding: 32px 28px;
+  animation: slideUp 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.access-emblem {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.access-symbol {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 10px;
+  filter: drop-shadow(0 0 8px rgba(200,160,64,0.4));
+}
+
+.access-title {
+  font-family: var(--font-t);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--gold2);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.access-divider {
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 10px auto;
+}
+
+.access-sub {
+  font-family: var(--font-m);
+  font-size: 9px;
+  color: var(--text3);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.access-label {
+  font-family: var(--font-t);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text3);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.access-input {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font-m);
+  font-size: 18px;
+  letter-spacing: 0.2em;
+  padding: 10px 14px;
+  outline: none;
+  text-align: center;
+  transition: border-color 0.2s;
+  text-security: disc;
+  -webkit-text-security: disc;
+}
+
+.access-input:focus { border-color: var(--gold); }
+.access-input.error { border-color: var(--red); animation: shake 0.35s ease; }
+
+.access-btn {
+  width: 100%;
+  margin-top: 16px;
+  background: rgba(200,160,64,0.1);
+  border: 1px solid var(--gold);
+  color: var(--gold2);
+  font-family: var(--font-t);
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.access-btn:hover { background: rgba(200,160,64,0.22); }
+
+.access-error {
+  font-family: var(--font-m);
+  font-size: 10px;
+  color: var(--red);
+  text-align: center;
+  margin-top: 10px;
+  min-height: 14px;
+  letter-spacing: 0.06em;
+}
+
+.access-footer {
+  font-family: var(--font-m);
+  font-size: 9px;
+  color: var(--text3);
+  text-align: center;
+  margin-top: 24px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+/* ── MAIN APP ── */
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+#app.visible { opacity: 1; }
+
+/* ── HEADER ── */
+#header {
+  background: var(--bg2);
+  border-bottom: 2px solid var(--gold);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  height: 52px;
+  flex-shrink: 0;
+}
+
+.hdr-logo {
+  font-family: var(--font-t);
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.12em;
+  color: var(--gold2);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.hdr-sub {
+  font-family: var(--font-m);
+  font-size: 9px;
+  color: var(--text3);
+  letter-spacing: 0.1em;
+}
+
+.hdr-sep { flex: 1; }
+
+.hdr-game-name {
+  font-family: var(--font-t);
+  font-size: 13px;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-left: 1px solid var(--border);
+  padding-left: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 240px;
+}
+
+/* ── BODY SPLIT ── */
+#body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* ── SIDEBAR ── */
+#sidebar {
+  width: var(--sidebar);
+  min-width: var(--sidebar);
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+#sidebar-title {
+  font-family: var(--font-t);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text3);
+  padding: 10px 14px 8px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+#game-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 0;
+}
+
+#game-list::-webkit-scrollbar { width: 4px; }
+#game-list::-webkit-scrollbar-track { background: var(--bg2); }
+#game-list::-webkit-scrollbar-thumb { background: var(--border); }
+
+.game-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+  border-left: 2px solid transparent;
+  user-select: none;
+}
+
+.game-item:hover {
+  background: var(--bg3);
+  border-left-color: var(--border2);
+}
+
+.game-item.active {
+  background: var(--bg3);
+  border-left-color: var(--gold);
+}
+
+.game-item-icon { font-size: 18px; flex-shrink: 0; }
+
+.game-item-info { flex: 1; min-width: 0; }
+
+.game-item-name {
+  font-family: var(--font-t);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.game-item.active .game-item-name { color: var(--gold2); }
+
+.game-item-meta {
+  font-family: var(--font-m);
+  font-size: 9px;
+  color: var(--text3);
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.game-item-count {
+  font-family: var(--font-m);
+  font-size: 9px;
+  color: var(--gold);
+  border: 1px solid var(--border);
+  padding: 1px 5px;
+  flex-shrink: 0;
+}
+
+#sidebar-footer {
+  padding: 8px 14px;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-m);
+  font-size: 9px;
+  color: var(--text3);
+  letter-spacing: 0.08em;
+  flex-shrink: 0;
+}
+
+/* ── MAIN READER ── */
+#reader {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Search bar */
+#searchbar {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 12px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+#search-input {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font-m);
+  font-size: 13px;
+  padding: 7px 12px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+#search-input:focus { border-color: var(--gold); }
+#search-input::placeholder { color: var(--text3); }
+
+#search-count {
+  font-family: var(--font-m);
+  font-size: 10px;
+  color: var(--text3);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+#btn-clear-search {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text3);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 5px 8px;
+  transition: all 0.15s;
+  display: none;
+}
+
+#btn-clear-search:hover { border-color: var(--gold); color: var(--gold2); }
+#btn-clear-search.visible { display: block; }
+
+/* Tag filter bar */
+#tag-bar {
+  display: flex;
+  gap: 5px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding: 6px 12px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  scrollbar-width: none;
+}
+#tag-bar::-webkit-scrollbar { display: none; }
+#tag-bar:empty { display: none; }
+
+.tag {
+  font-family: var(--font-t);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  color: var(--text3);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.tag:hover, .tag.active {
+  border-color: var(--gold);
+  color: var(--gold2);
+  background: rgba(200,160,64,0.1);
+}
+
+/* Sections */
+#sections-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  max-width: 860px;
+  scroll-behavior: smooth;
+}
+
+#sections-container::-webkit-scrollbar { width: 5px; }
+#sections-container::-webkit-scrollbar-track { background: var(--bg2); }
+#sections-container::-webkit-scrollbar-thumb { background: var(--border2); }
+
+/* Empty state */
+#empty-state {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 40px;
+  text-align: center;
+}
+
+#empty-state.visible { display: flex; }
+
+.empty-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.4; }
+
+.empty-title {
+  font-family: var(--font-t);
+  font-size: 18px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 8px;
+}
+
+.empty-sub {
+  font-family: var(--font-m);
+  font-size: 11px;
+  color: var(--text3);
+  opacity: 0.6;
+}
+
+/* Section cards */
+.section-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  margin-bottom: 2px;
+  transition: border-color 0.15s;
+}
+
+.section-card:hover { border-color: var(--border2); }
+.section-card.open { border-color: var(--gold); }
+.section-card.highlight { border-color: rgba(200,160,64,0.5); background: rgba(200,160,64,0.03); }
+
+.section-header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 6px 10px 6px 12px;
+  cursor: pointer;
+  user-select: none;
+}
+.section-header-left {
+  display: flex;
+  align-items: center;
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+}
+.section-header-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  margin-left: 16px;
+}
+.section-num {
+  font-family: var(--font-m);
+  font-size: 11px;
+  color: var(--gold);
+  width: 38px;
+  min-width: 38px;
+  border-right: 1px solid var(--border);
+  padding-right: 8px;
+  flex-shrink: 0;
+}
+.section-title-text {
+  font-family: var(--font-t);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text);
+  padding-left: 10px;
+  white-space: normal;
+  word-break: break-word;
+  min-width: 0;
+  flex: 1 1 0;
+}
+.section-tag {
+  font-family: var(--font-m);
+  font-size: 9px;
+  color: #fff;
+  padding: 3px 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  flex-shrink: 0;
+  border-radius: 2px;
+  white-space: nowrap;
+  background: #4a4a4a;
+}
+.section-tag[data-tag='Séquence'],.section-tag[data-tag='Setup']            { background:#1a6b35; }
+.section-tag[data-tag='Débarquement']                                       { background:#1a5a8a; }
+.section-tag[data-tag='Combat'],.section-tag[data-tag='Attaque US']         { background:#a02020; }
+.section-tag[data-tag='Naval'],.section-tag[data-tag='Tir All']             { background:#1a4a7a; }
+.section-tag[data-tag='Mouvement'],.section-tag[data-tag='Mouvement US']    { background:#6b4a1a; }
+.section-tag[data-tag='Allemands'],.section-tag[data-tag='Feu allemand'],.section-tag[data-tag='Actions US'] { background:#5a1a6b; }
+.section-tag[data-tag='Victoire']                                           { background:#7a5a00; }
+.section-card.open .section-tag { filter: brightness(1.2); }
+
+/* Bouton NotebookLM */
+.btn-notebook {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  background: rgba(200,160,64,0.08);
+  border: 1px solid var(--gold);
+  color: var(--gold2);
+  font-family: var(--font-t);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 7px 14px;
+  cursor: pointer;
+  transition: all 0.18s;
+  text-decoration: none;
+}
+.btn-notebook:hover {
+  background: rgba(200,160,64,0.2);
+  color: var(--gold3);
+}
+
+.chevron {
+  color: var(--text3);
+  font-size: 10px;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.section-card.open .chevron { transform: rotate(180deg); color: var(--gold); }
+
+.section-body {
+  display: none;
+  padding: 2px 12px 14px 57px;
+  border-top: 1px solid var(--border);
+}
+
+.section-card.open .section-body { display: block; }
+
+.section-body p { margin-top: 9px; color: var(--text2); font-size: 14px; }
+.section-body ul, .section-body ol { margin: 7px 0 0 16px; color: var(--text2); font-size: 14px; }
+.section-body li { margin-bottom: 3px; }
+.section-body strong { color: var(--gold3); font-weight: 600; }
+.section-body em { color: var(--text); font-style: italic; }
+.section-body table { margin-top: 10px; border-collapse: collapse; width: 100%; font-size: 13px; }
+.section-body th { background: var(--bg3); color: var(--gold2); font-family: var(--font-t); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; padding: 5px 8px; border: 1px solid var(--border); text-align: left; }
+.section-body td { color: var(--text2); padding: 5px 8px; border: 1px solid var(--border); vertical-align: top; }
+.section-body tr:nth-child(even) td { background: rgba(0,0,0,0.12); }
+
+.btn-notebook { display:inline-flex;align-items:center;gap:6px;margin-top:14px;background:rgba(138,110,32,0.08);border:1px solid var(--gold);color:var(--gold2);font-family:var(--font-t);font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:7px 14px;cursor:pointer;transition:all .18s; }
+.btn-notebook:hover { background:rgba(138,110,32,0.2); }
+mark { background: rgba(200,160,64,0.28); color: var(--gold3); padding: 0 2px; }
+
+/* Status bar */
+#statusbar {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  padding: 6px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-m);
+  font-size: 10px;
+  color: var(--text3);
+  flex-shrink: 0;
+}
+
+/* Toast */
+#toast {
+  position: fixed;
+  bottom: 54px;
+  left: 50%;
+  transform: translateX(-50%) translateY(14px);
+  background: var(--bg3);
+  border: 1px solid var(--gold);
+  color: var(--gold2);
+  font-family: var(--font-t);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  padding: 7px 18px;
+  opacity: 0;
+  transition: all 0.3s;
+  pointer-events: none;
+  z-index: 7000;
+  white-space: nowrap;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* Mobile toggle */
+#sidebar-toggle {
+  display: none;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text2);
+  font-size: 12px;
+  padding: 5px 8px;
+  cursor: pointer;
+  font-family: var(--font-t);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 10px;
+  transition: all 0.15s;
+}
+#sidebar-toggle:hover { border-color: var(--gold); color: var(--gold2); }
+
+/* Responsive */
+@media (max-width: 700px) {
+  :root { --sidebar: 100%; }
+  #sidebar {
+    position: fixed;
+    top: 52px;
+    left: 0;
+    bottom: 0;
+    z-index: 500;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    width: 85%;
+    min-width: unset;
+  }
+  #sidebar.mobile-open { transform: translateX(0); }
+  #sidebar-toggle { display: block; }
+  .hdr-game-name { display: none; }
+}
+
+/* ── MOBILE GAME BANNER ── */
+#mobile-game-banner {
+  display: none;
+  background: linear-gradient(90deg, rgba(200,160,64,0.12), rgba(200,160,64,0.04));
+  border-bottom: 1px solid var(--gold);
+  padding: 8px 14px;
+  font-family: var(--font-t);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-align: center;
+}
+@media (max-width: 768px) {
+  #mobile-game-banner { display: block; }
+  .hdr-game-name { display: none; }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20%,60%  { transform: translateX(-6px); }
+  40%,80%  { transform: translateX(6px); }
+}
+@keyframes sectionIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.section-card { animation: sectionIn 0.2s ease both; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════
+     CATALOGUE_JEUX — MODIFIER ICI
+══════════════════════════════════════════════════ -->
+<script>
+const CATALOGUE_JEUX = [
+  {
+    id: "demo-dday",
+    name: "D-Day at Omaha Beach",
+    icon: "⚔",
+    author: "John Butterfield · Decision Games",
+    version: "VF v2",
+    sections: [
+  {
+    "num": "4",
+    "anchor": "sec-4",
+    "title": "SEQUENCE OF PLAY",
+    "tag": "sequence",
+    "content": "DDOB is played in turns. Each turn consists of several phases, conducted in the following sequence. Move the Phase marker along the Card/Phase track to keep track of the current phase. During the course of the turn you will draw several cards, each for a different function. As you draw each card, place it in the appropriate box of the Card/Phase track, for reference.",
+    "example": ""
+  },
+  {
+    "num": "4.I",
+    "anchor": "sec-4.I",
+    "title": "US Amphibious Operations Phase",
+    "tag": "phase",
+    "content": "<ol><li>Draw a landing card and apply its results to US units in Beach Landing boxes in the East Sector. Then draw a second landing card and apply its results to units in Beach Landing Boxes the West Sector.</li><li>Land all units remaining in Beach Landing Boxes by moving each to the corresponding waterline/beach hex.</li><li>Take units in the current turn of the Turn Track and place them in the Beach Landing Boxes listed on the units.</li></ol>",
+    "example": ""
+  },
+  {
+    "num": "4.II",
+    "anchor": "sec-4.II",
+    "title": "Event Phase (skip on Turn 1)",
+    "tag": "phase",
+    "content": "Draw an event card and implement the event listed for the current turn.",
+    "example": ""
+  },
+  {
+    "num": "4.III",
+    "anchor": "sec-4.III",
+    "title": "German Fire Phase",
+    "tag": "phase",
+    "content": "Draw a fire card and conduct German fire against US units in the East sector, then draw a second fire card and conduct fire in the West Sector. Conduct fire in each sector as follows:<ol><li>Occupied German positions that match the colors shown on the fire card fire at US units in the position's field of fire. Check to see which US units are hit by fire and apply disruption, step losses or elimination as called for.</li><li>Beginning Turn 4: If the fire card includes a German artillery value, check to see if a US unit in the sector is hit by artillery fire.</li><li>Remove Disruption markers from eligible German positions.</li></ol>",
+    "example": ""
+  },
+  {
+    "num": "4.IV",
+    "anchor": "sec-4.IV",
+    "title": "US Engineer Phase (skip on Turn 1)",
+    "tag": "phase",
+    "content": "Place Cleared markers in beach hexes with obstacles, to show that the obstacles there have been cleared by US engineers (<a href='#sec-10.1' class='rule-link'>10.1</a>).",
+    "example": ""
+  },
+  {
+    "num": "5",
+    "anchor": "sec-5",
+    "title": "US Amphibious Operations",
+    "tag": "Débarquement",
+    "content": "All US units enter play via amphibious landing, during the US Amphibious Operations phase. Each turn, conduct landing checks for units already in Beach Landing Boxes, then move units in the boxes to the beach. Finally, place newly arriving units in the Beach Landing Boxes (they will land next turn).",
+    "example": ""
+  },
+  {
+    "num": "5.1",
+    "anchor": "sec-5.1",
+    "title": "Landing Checks",
+    "tag": "Débarquement",
+    "content": "Conduct a landing check in each sector in which units are in beach landing boxes, beginning with the East sector. This check determines if units in Beach Landing Boxes are affected by hazards representing cross currents, rough seas, equipment failure, navigational errors and German mined obstacles.<br><br><strong>Procedure:</strong> Draw a landing card and apply the results of this single draw to all units in Beach Landing Boxes in the sector. The card shows the three US target symbols (◆,▲,●), each with a Landing Result letter (A, B, C or D). For each unit, refer to the Landing Table for the current turn, cross referencing the unit's type with the Landing Results letter for the unit's target symbol to determine the landing result for the unit. Units may drift east or west of their intended landing location, be delayed, lose steps or be eliminated by a landing result. Apply the result to the unit immediately.",
+    "example": "On Turn 2, four infantry units are in Beach Landing Boxes in the West sector. You draw a card with results of ◆B ●A ▲D. Referring to the Landing Table for Turn 2, you find that the infantry unit with the ◆ selector drifts two boxes east (result B), the two infantry units with the ● selector drift four boxes east (result A), and the unit with the ▲ selector is not affected (result D)."
+  },
+  {
+    "num": "5.11",
+    "anchor": "sec-5.11",
+    "title": "Drift Results",
+    "tag": "Débarquement",
+    "content": "If a unit drifts, move the unit the indicated number of boxes to the left (east) or to the right (west) along the row of Beach Landing Boxes. A unit that drifts will land on the beach from the box it drifts to.<ul><li>A unit that drifts beyond the easternmost or westernmost Beach Landing Box on the map is delayed. Place it on the Turn track, two turns after the current turn.</li><li>A unit that drifts to a landing box during a high tide turn that does not point toward a high tide beach hex is delayed.</li></ul>",
+    "example": ""
+  },
+  {
+    "num": "5.12",
+    "anchor": "sec-5.12",
+    "title": "HQ Units and Generals — Landing",
+    "tag": "Débarquement",
+    "content": "HQ units and Generals are not checked for landing results, but an HQ may be affected by a submerged mine explosion (<a href='#sec-5.14' class='rule-link'>5.14</a>). If an HQ or General is stacked with a unit that drifts, the HQ or General may drift with the unit or may stay in its landing box, at your option.",
+    "example": ""
+  },
+  {
+    "num": "5.13",
+    "anchor": "sec-5.13",
+    "title": "Ranger Infantry Landing Options",
+    "tag": "Débarquement",
+    "content": "As noted on the Landing Table, a ranger infantry unit that receives a \"No Effect\" landing result on turn 4 or later may voluntarily drift one to four hexes east, at your option. This does not apply to the ranger infantry unit designated C/R2 scheduled to land on Turn 2.",
+    "example": ""
+  },
+  {
+    "num": "5.14",
+    "anchor": "sec-5.14",
+    "title": "Submerged Mine Explosions (Turn 7-22)",
+    "tag": "Débarquement",
+    "content": "If the landing card you draw includes an Exploding Mine symbol, apply all other landing results, then check to see if one of your units in a beach landing box detonates submerged mines as it lands in a beach hex that has not been cleared of obstacles. All beach obstacles are uncleared at the start of play, and become cleared as you perform engineer operations (<a href='#sec-10.1' class='rule-link'>10.1</a>).<br><img src='images/omaha_5_14.png' class='rule-img'><ul><li>During Low Tide (Turns 1-6 and 28-32), mines are not submerged and are not a hazard; no check is required.</li><li>During Mid Tide (Turns 7-15), if any units in the sector will land in a mid-tide waterline hex with uncleared beach obstacles, you must remove a step from one such unit of your choice. All beach obstacles are considered cleared beginning on Turn 23 of the extended game, and so checks are not required during mid-tide turns 23-27.</li><li>During high tide (Turns 16-22), if any units will pass through hexes with uncleared beach obstacles to reach their high-tide waterline landing hex, you must remove a step from one such unit of your choice.</li></ul><br><strong>Leader Exception:</strong> If an HQ unit is the only unit available to suffer loss due to a mine explosion, it does not lose a step. Instead it is delayed; place the HQ two turns after the current turn on the turn track. A General is not affected by a mine explosion.",
+    "example": ""
+  },
+  {
+    "num": "6",
+    "anchor": "sec-6",
+    "title": "End of Turn",
+    "tag": "sequence",
+    "content": "Move all cards from the card track to the discard pile, and move the Phase marker back to the beginning of the card track. If the turn track indicates that the cards are to be shuffled, shuffle all discards back into the deck. Move the turn marker one turn ahead on the Turn Track.\nKeep playing turns until either US division suffers catastrophic loss (ending the game) or until the end of the scenario, at which time you calculate victory points to find if you have won or lost.\nBeginning with Turn 17, when the time scale shifts from 15 to 30 minutes per turn, additional activities are introduced to the sequence of play, as described in section <a href='#sec-14' class='rule-link'>14</a>.",
+    "example": ""
+  },
+  {
+    "num": "7.0",
+    "title": "US Actions",
+    "tag": "Actions US",
+    "content": "<p>During the US Action Phase you may conduct actions with US units. Each turn, you may select two US units or stacks in each division, each of which may conduct one action. In addition, US units meeting certain requirements may conduct actions for free.</p><p>US units may conduct any of the following actions, if eligible:</p><ul><li>Move one hex (all units)</li><li>Climb a Bluff (infantry, generals and HQs only)</li><li>Climb a Cliff (infantry only)</li><li>Remove disruption (any unit with a disrupted marker)</li><li>Attack (all units)</li><li>Barrage (tank units only)</li><li>Naval artillery barrage (naval fire marker only)</li></ul>"
+  },
+  {
+    "num": "7.1",
+    "title": "Free Actions",
+    "tag": "Actions US",
+    "content": "<p>Units may conduct free actions which do not count toward your limit of two actions per division per turn. However, a unit may only perform one action per turn, even if that action is free.</p><p>Units may conduct free actions in the following situations:</p><ul><li><strong>Ranger infantry units.</strong> Ranger infantry units always perform actions for free. This ability does not extend to non-ranger units stacked with rangers.</li><li><strong>Units in command of a General.</strong> All units in the same hex as a General may perform free actions, as long as the General has not yet moved this turn (7.33).</li><li><strong>Units in command of an HQ.</strong> One unit per turn in command of an HQ (but not in the same hex as the HQ) may perform a free action. An HQ is in command of units within its command range.</li></ul>"
+  },
+  {
+    "num": "7.2",
+    "title": "Movement",
+    "tag": "Actions US",
+    "content": "<p>A unit that takes a move action moves from its current hex to an adjacent hex, subject to the movement restrictions below.</p><ul><li>A unit may not move into a German-occupied hex, except as part of an attack (8.0).</li><li>A unit may not move through a German-occupied hex.</li><li>A unit in an exit hex may exit the map as a movement action.</li></ul><p><strong>Stacking:</strong> At the end of any action, no hex may contain more than four steps of US units. If a move would violate the stacking limit, the move is not allowed.</p><p><strong>Concentrated target:</strong> When five or more steps occupy the same hex, they form a concentrated target and are more susceptible to German fire.</p>"
+  },
+  {
+    "num": "7.3",
+    "title": "Infiltration Move",
+    "tag": "Actions US",
+    "content": "<p>A US infantry unit adjacent to a German-occupied hex may attempt to move through that hex (infiltration move) to reach a hex on the far side. Draw a fire card. Based on the color of the German position and the target symbol of the infiltrating US unit, you must remove a step from the US unit. If the German position has no depth marker the color symbol must be a single symbol in order to affect the infiltrating unit.</p><p>If the infiltrating US unit loses a step, you may choose to complete the move or keep the unit in the hex from which it started the move. In either case, the unit has performed an action.</p><p>A unit infiltrating to a hex occupied by a US unit must check for German fire, but is not considered a concentrated target, even if the move puts five or more steps in the hex.</p><p>HQ's and generals may not attempt an infiltration move on their own, but may move with a regular unit doing so.</p><p>If infiltrating past two German positions draw one card. If unit's target symbol and either position color appears, unit loses a step. No additional penalty if both colors appear.</p>"
+  },
+  {
+    "num": "7.33",
+    "title": "HQ & General Movement Restriction",
+    "tag": "Actions US",
+    "content": "<p>Once you move an HQ unit or General, it no longer provides free actions to other units for the remainder of the turn.</p>"
+  },
+  {
+    "num": "8.0",
+    "title": "US Combat Actions",
+    "tag": "Combat",
+    "content": "<p>During the US Action Phase, your units may attempt to disrupt and destroy German units via two types of actions:</p><ul><li><strong>Attack</strong> a German-occupied hex. An attack must include at least one infantry unit adjacent to the German-occupied hex. Other units may participate from adjacent hexes and, if capable of ranged fire, from non-adjacent hexes.</li><li><strong>Barrage</strong> a German-occupied hex exclusively from non-adjacent hexes. Tank units may barrage a German-occupied hex in range of but not adjacent to the tank itself.</li></ul>"
+  },
+  {
+    
+  "num": "8.1",
+  "title": "Units Eligible to Attack",
+  "content": "<p>An attack must include at least one infantry or ranger infantry unit attacking a German-occupied hex from an adjacent hex. As long as this requirement is met, any units may join in the attack against the same German-occupied hex within the following conditions:</p><ul><li>Infantry units must be in a hex adjacent to the German-occupied hex.</li><li>Heavy infantry units (those with a printed range of 2) must be adjacent or one hex away from the German-occupied hex.</li><li>Tank, anti-tank and anti-air units must be within range and one or more of the following must be true:<ul><li>the unit is adjacent to the target hex, or</li><li>the unit is adjacent to an attacking infantry unit, or</li><li>the unit is in command of any HQ or General, or</li><li>at least one attacking infantry unit is in command of any HQ or General.</li></ul></li><li>Artillery units (including SP artillery) must be:<ul><li>in range but not adjacent to the target; and</li><li>in command of an HQ (not a General) that is also commanding at least one infantry unit attacking the position (You will find this condition difficult to meet until late in the game); and</li><li>if the artillery unit is not armored, it may not be in the field of fire of an undisrupted German unit.</li></ul></li><li>Naval fire may be included in the attack if you have a naval fire marker to expend, and at least one attacking infantry unit has a radio or is in command of an HQ.</li></ul>"
+ },
+
+  {
+    "num": "8.11",
+    "anchor": "sec-8.11",
+    "title": "Determining Range",
+    "tag": "Combat",
+    "content": "A hex is in range of a US unit if the distance in hexes between them (counting the target hex but not the firing unit's hex) is equal to or less than the firing unit's range.",
+    "example": ""
+  },
+  {
+    "num": "8.12",
+    "anchor": "sec-8.12",
+    "title": "High Ground Ranged Fire Restriction",
+    "tag": "Combat",
+    "content": "A US unit in a beach or pavilion/draw hex may not conduct ranged fire against a German-occupied position on the high ground, unless that position projects a field of fire into at least one beach hex (meaning the position is on the bluff overlooking the beach). This restriction applies to attack actions and barrage actions.<ul><li>The high ground ranged fire restriction does not apply to naval fire.</li></ul>",
+    "example": ""
+  },
+  {
+    "num": "8.13",
+    "anchor": "sec-8.13",
+    "title": "Unit Actions Required to Attack",
+    "tag": "Combat",
+    "content": "Each unit participating in an attack against a single German-occupied hex must conduct an action in order to participate in the attack. A unit unable to conduct an action may not attack.",
+    "example": ""
+  },
+  {
+    "num": "8.14",
+    "anchor": "sec-8.14",
+    "title": "HQ Units and Generals in Attack",
+    "tag": "Combat",
+    "content": "HQ units and Generals do not directly participate in an attack, and are not affected by the results of an attack.",
+    "example": ""
+  },
+  {
+    "num": "8.15",
+    "anchor": "sec-8.15",
+    "title": "Bluff and Cliff Hexside Attack Restrictions",
+    "tag": "Combat",
+    "content": "As noted on the Terrain Effects Chart, a unit on the low ground (beach or pavilion) may not attack across a bluff or cliff hexside, unless capable of conducting ranged fire. A unit on the high ground may attack across a bluff hexside, but not across a cliff hexside.<ul><li>A heavy infantry unit (range of 2) may attack across a bluff or cliff hexside, but only if another infantry unit is attacking the German position from an adjacent hex through an allowed hexside.</li></ul>",
+    "example": ""
+  },
+  {
+    "num": "8.16",
+    "anchor": "sec-8.16",
+    "title": "One Attack Per German Position",
+    "tag": "Combat",
+    "content": "A German position may only be attacked once in a given US Action Phase.",
+    "example": ""
+  },
+
+  {
+    "num": "8.2",
+    "title": "Attack Procedure",
+    "tag": "Combat",
+    "content": "<p>To resolve an attack, draw one attack card and follow this procedure:</p><ol><li>Determine the US attack strength.</li><li>Reveal German unit(s) in the attacked hex (if unrevealed).</li><li>Check German weapon requirements — the card will indicate which weapons are needed to defeat the German unit.</li><li>Compare US attack strength and weapons to German requirements to determine the result.</li><li>Apply the result: disruption, step loss, or elimination of the German unit; and/or step loss to the attacking US units.</li></ol>"
+  },
+  {
+    "num": "8.21",
+    "title": "US Attack Strength",
+    "tag": "Combat",
+    "content": "<p>Each US unit that participates in an attack contributes its attack strength. Sum the attack strengths of all participating units to determine the total US attack strength for the attack.</p>"
+  },
+  {
+    "num": "8.22",
+    "title": "Flanking",
+    "tag": "Combat",
+    "content": "<p>Some German units require a flanking attack to be defeated. When the depth marker list the flanking requirement, the US units must be attacking from at least three hexes adjacent to the German hex to satisfy the requirement. The three hexes may be adjacent to each other.</p>"
+  },
+  {
+    "num": "8.23",
+    "title": "Heroes & Weapons",
+    "tag": "Combat",
+    "content": "<p>When a unit with a hero attacks from an adjacent hex, the hero provides a weapon \"wild card.\" The hero may stand in for any one weapon requirement of your choice, after all German weapon requirements are revealed.</p><ul><li>A hero cannot stand in for the flanking requirement.</li><li>A hero can increase your attack strength by one, instead of providing a weapon wild card, at your option.</li><li>This benefit is not cumulative. If more than one hero is involved in an attack, you may only name one wild card weapon.</li></ul>"
+  },
+  {
+    "num": "8.24",
+    "title": "HQ Radios",
+    "tag": "Combat",
+    "content": "<p>US HQ units possess radios, a weapon requirement for defeating certain German units. A US unit attacking a German position from an adjacent hex when in command of an HQ may include the radio among its weapon capabilities.</p>"
+  },
+  {
+    "num": "8.25",
+    "title": "Naval Fire Weapon",
+    "tag": "Combat",
+    "content": "<p>The naval fire weapon requirement can be satisfied by a naval fire marker in the attacking hex or an adjacent hex.</p>"
+  },
+  {
+    "num": "8.3",
+    "title": "Attack Results",
+    "tag": "Combat",
+    "content": "<p>The attack card indicates whether the German unit is disrupted, loses a step, or is eliminated, based on the US attack strength and whether weapon requirements are met. It also indicates any losses to attacking US units.</p>"
+  },
+  {
+    "num": "8.31",
+    "title": "Terrain Effects on Attack",
+    "tag": "Combat",
+    "content": "<p>Terrain in the German-occupied hex, and on the hexside between the attacking US unit and the German hex, may reduce the effectiveness of the US attack. When a US unit attacks from an adjacent hex across a hexside, use the hexside terrain that is least advantageous to the German defenders.</p><p>For example, if attacking across a slope and shingle, use shingle to determine the German defensive advantage.</p>"
+  },
+  {
+    "num": "8.32",
+    "title": "Attacking Two-Hex WN Positions",
+    "tag": "Combat",
+    "content": "<p>When attacking a WN position occupying two adjacent hexes, you attack only one hex at a time. The German units in the other hex do not aid the defense in any way and are not affected by the outcome of the attack.</p>"
+  },
+  {
+    "num": "8.33",
+    "title": "German Withdrawal",
+    "tag": "Combat",
+    "content": "<p>When a US attack defeats a German reinforcement unit of the 352nd Division the unit withdraws instead of being eliminated, if it can trace German communication at the moment of attack (see 12.2 and 12.23). Place the withdrawn unit face down in the Division Reinforcement Box (regardless of reinforcement type). Defeated units not eligible to withdraw are removed from play.</p><p>The following units are <strong>not</strong> eligible to withdraw:</p><ul><li>a WN unit,</li><li>a reinforcement unit in the 716th division,</li><li>a unit not in German communication.</li></ul>"
+  },
+  {
+    "num": "8.34",
+    "title": "No Advance After Combat",
+    "tag": "Combat",
+    "content": "<p>There is no \"advance after combat\" when a US attack eliminates or withdraws a German unit. The US units remain in their current hexes.</p>"
+},
+    ]
+  },
+  {
+    id: "twilight-struggle",
+    name: "Twilight Struggle",
+    icon: "☢",
+    author: "Ananda Gupta & Jason Matthews · GMT",
+    version: "Deluxe Ed.",
+    sections: [
+      {
+        num: "1.0",
+        title: "Introduction & but du jeu",
+        tag: "Setup",
+        content: "<p><em>Twilight Struggle</em> simule la Guerre Froide (1945–1989). Deux joueurs — <strong>USA</strong> et <strong>URSS</strong> — s'affrontent via l'influence politique, des coups d'état et des crises nucléaires sur <strong>10 tours</strong>.</p>"
+      },
+      {
+        num: "2.0",
+        title: "Structure du tour",
+        tag: "Séquence",
+        content: "<ol><li><strong>Phase d'Amélioration de la Main</strong></li><li><strong>Phase des Titres</strong> (3 tours sur 10)</li><li><strong>Phase d'Action</strong> — alterner les cartes, URSS en premier</li><li><strong>Scoring des Régions</strong> si carte score jouée</li><li><strong>Phase Militaire</strong></li><li><strong>Défausse</strong></li></ol>"
+      },
+      {
+        num: "3.0",
+        title: "Jouer une carte",
+        tag: "Cartes",
+        content: "<p>Chaque carte possède une <strong>Valeur d'Opération (VO)</strong> et un <strong>Évènement</strong>. En jouant une carte, le joueur choisit :</p><ul><li>Utiliser la VO pour des <em>Opérations</em> (influence, coup d'état, réalignement)</li><li>Déclencher l'<em>Évènement</em> si c'est sa faction ou un événement neutre</li></ul><p>⚠ Jouer une carte adverse déclenche d'abord son Évènement.</p>"
+      },
+      {
+        num: "4.0",
+        title: "Influence",
+        tag: "Opérations",
+        content: "<p>Ajouter de l'influence coûte <strong>1 VO par marqueur</strong> dans un pays adjacent à une présence alliée. Dans un pays non adjacent, le coût est <strong>2 VO</strong>.</p><p><strong>Contrôle :</strong> Un joueur contrôle un pays si son influence dépasse celle de l'adversaire d'au moins la <em>Stabilité</em> du pays.</p>"
+      },
+      {
+        num: "5.0",
+        title: "Course à l'espace",
+        tag: "Règles spéciales",
+        content: "<p>Défausser une carte avec une VO ≥ requise et lancer 1d6 :</p><table><tr><th>Niveau</th><th>Cible d6</th><th>PV si 1er</th></tr><tr><td>Lancement satellite</td><td>1–3</td><td>+2 PV</td></tr><tr><td>Orbite humaine</td><td>1–4</td><td>+2 PV</td></tr><tr><td>Alunissage</td><td>1–3</td><td>+4 PV</td></tr></table>"
+      },
+      {
+        num: "6.0",
+        title: "DEFCON & Guerre Nucléaire",
+        tag: "Règles spéciales",
+        content: "<p>Le DEFCON commence à <strong>5</strong> et peut descendre jusqu'à <strong>1</strong> (guerre nucléaire = fin de partie).</p><p>Les coups d'état en <em>zones sensibles</em> réduisent le DEFCON. Si le DEFCON atteint 1 pendant votre tour, vous <strong>perdez immédiatement</strong>.</p>"
+      },
+      {
+        num: "7.0",
+        title: "Scoring des régions",
+        tag: "Victoire",
+        content: "<p>Quand une carte de scoring est jouée, évaluer la région :</p><ul><li><strong>Présence</strong> : 1+ pays contrôlés → bonus mineur</li><li><strong>Domination</strong> : plus de pays contrôlés + au moins 1 clé → bonus majeur</li><li><strong>Contrôle</strong> : tous les pays-clés + plus de contrôle général → bonus maximum</li></ul>"
+      }
+    ]
+  }
+];
+</script>
+<!-- ══ FIN CATALOGUE ══════════════════════════════ -->
+
+<!-- ACCESS SCREEN -->
+<div id="access-screen">
+  <div class="access-box">
+    <div class="access-emblem">
+      <span class="access-symbol">⚔</span>
+      <div class="access-title">WargameRules</div>
+      <div class="access-divider"></div>
+      <div class="access-sub">Référence de règles — accès restreint</div>
+    </div>
+    <label class="access-label" for="code-input">Code d'accès</label>
+    <input
+      id="code-input"
+      class="access-input"
+      type="password"
+      placeholder="· · · · · ·"
+      autocomplete="off"
+      maxlength="20"
+      autofocus
+    >
+    <button class="access-btn" onclick="checkAccess()">Valider l'accès</button>
+    <div class="access-error" id="access-error"></div>
+  </div>
+  <div class="access-footer">Système de consultation de règles · Usage interne</div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <!-- HEADER -->
+  <div id="header">
+    <button id="sidebar-toggle" onclick="toggleSidebar()">☰ Jeux</button>
+    <div>
+      <div class="hdr-logo">⚔ WargameRules</div>
+      <div class="hdr-sub">Référence de règles</div>
+    </div>
+    <div class="hdr-sep"></div>
+    <button id="theme-toggle" onclick="toggleTheme()" style="background:none;border:1px solid var(--border);color:var(--text2);font-size:14px;padding:3px 8px;cursor:pointer;border-radius:3px;margin-right:8px;">☀️</button>
+    <div class="hdr-game-name" id="hdr-game-name">— Sélectionner un jeu —</div>
+  </div>
+
+  <!-- BODY -->
+  <div id="body">
+    <!-- SIDEBAR -->
+    <div id="sidebar">
+      <div id="sidebar-title">Catalogue de jeux</div>
+      <div id="game-list"></div>
+      <div id="sidebar-footer" id="catalogue-count"></div>
+    </div>
+
+    <!-- READER -->
+    <div id="reader">
+      <div id="mobile-game-banner">— Sélectionner un jeu —</div>
+      <div id="searchbar">
+        <input
+          id="search-input"
+          type="search"
+          placeholder="Rechercher dans les règles..."
+          oninput="handleSearch()"
+          onkeydown="if(event.key==='Escape'){clearSearch();}"
+        >
+        <span id="search-count"></span>
+        <button id="btn-clear-search" onclick="clearSearch()">✕ Effacer</button>
+      </div>
+      <div id="tag-bar"></div>
+
+      <!-- Empty state -->
+      <div id="empty-state">
+        <div class="empty-icon">⚔</div>
+        <div class="empty-title">Sélectionnez un jeu</div>
+        <div class="empty-sub">Choisissez un titre dans la liste à gauche</div>
+      </div>
+
+      <!-- Sections -->
+      <div id="sections-container"></div>
+
+      <!-- Statusbar -->
+      <div id="statusbar">
+        <span id="status-left">—</span>
+        <span id="status-right">WargameRules</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════
+//  CONFIG
+// ══════════════════════════════════════════════════
+const ACCESS_CODE = "wargame2025"; // ← modifier le mot de passe ici
+
+// ══════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════
+let currentGameId = null;
+let activeTag = null;
+let searchQuery = '';
+let sidebarOpen = false;
+
+// ══════════════════════════════════════════════════
+//  ACCESS
+// ══════════════════════════════════════════════════
+const codeInput = document.getElementById('code-input');
+const accessError = document.getElementById('access-error');
+const accessScreen = document.getElementById('access-screen');
+const appEl = document.getElementById('app');
+
+codeInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkAccess();
+  if (accessError.textContent) accessError.textContent = '';
+  codeInput.classList.remove('error');
+});
+
+function checkAccess() {
+  const val = codeInput.value.trim();
+  if (val === ACCESS_CODE) {
+    accessScreen.classList.add('hidden');
+    appEl.classList.add('visible');
+    renderSidebar();
+    // Auto-select first game
+    if (CATALOGUE_JEUX.length > 0) selectGame(CATALOGUE_JEUX[0].id);
+    toast('Accès accordé — Bonne lecture ⚔');
+  } else {
+    codeInput.classList.add('error');
+    accessError.textContent = '⚠ Code incorrect. Réessayez.';
+    codeInput.value = '';
+    setTimeout(() => codeInput.classList.remove('error'), 500);
+  }
+}
+
+// ══════════════════════════════════════════════════
+//  SIDEBAR
+// ══════════════════════════════════════════════════
+function renderSidebar() {
+  const list = document.getElementById('game-list');
+  const footer = document.getElementById('sidebar-footer');
+  list.innerHTML = '';
+
+  CATALOGUE_JEUX.forEach(game => {
+    const div = document.createElement('div');
+    div.className = 'game-item' + (game.id === currentGameId ? ' active' : '');
+    div.dataset.id = game.id;
+    div.innerHTML = `
+      <span class="game-item-icon">${game.icon || '⚔'}</span>
+      <div class="game-item-info">
+        <div class="game-item-name">${game.name}</div>
+        <div class="game-item-meta">${game.author || ''} ${game.version ? '· ' + game.version : ''}</div>
+      </div>
+      <span class="game-item-count">${game.sections.length}</span>
+    `;
+    div.addEventListener('click', () => {
+      selectGame(game.id);
+      if (window.innerWidth <= 700) closeSidebar();
+    });
+    list.appendChild(div);
+  });
+
+  footer.textContent = `${CATALOGUE_JEUX.length} jeu${CATALOGUE_JEUX.length > 1 ? 'x' : ''} dans le catalogue`;
+}
+
+// ══════════════════════════════════════════════════
+//  GAME SELECTION
+// ══════════════════════════════════════════════════
+function selectGame(id) {
+  currentGameId = id;
+  activeTag = null;
+  searchQuery = '';
+  document.getElementById('search-input').value = '';
+  document.getElementById('btn-clear-search').classList.remove('visible');
+  document.getElementById('search-count').textContent = '';
+
+  const game = CATALOGUE_JEUX.find(g => g.id === id);
+  if (!game) return;
+
+  // Update header
+  document.getElementById('hdr-game-name').textContent = `${game.icon || '⚔'} ${game.name}`;
+  document.getElementById('mobile-game-banner').textContent = `${game.icon || '⚔'} ${game.name}`;
+
+  // Update sidebar active state
+  document.querySelectorAll('.game-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.id === id);
+  });
+
+  // Hide empty state
+  document.getElementById('empty-state').classList.remove('visible');
+
+  // Build tag bar
+  buildTagBar(game);
+
+  // Render sections
+  renderSections(game.sections);
+
+  // Status
+  document.getElementById('status-left').textContent =
+    `${game.name} — ${game.sections.length} section${game.sections.length > 1 ? 's' : ''}`;
+  document.getElementById('status-right').textContent =
+    game.version ? `v${game.version}` : 'WargameRules';
+}
+
+// ══════════════════════════════════════════════════
+//  TAG BAR
+// ══════════════════════════════════════════════════
+function buildTagBar(game) {
+  const bar = document.getElementById('tag-bar');
+  const tags = [...new Set(game.sections.map(s => s.tag).filter(Boolean))];
+  bar.innerHTML = '';
+  if (tags.length < 2) { bar.style.display = 'none'; return; }
+  bar.style.display = 'flex';
+
+  const allTag = document.createElement('span');
+  allTag.className = 'tag' + (!activeTag ? ' active' : '');
+  allTag.textContent = 'Tout';
+  allTag.onclick = () => { activeTag = null; refreshTagBar(); filterSections(); };
+  bar.appendChild(allTag);
+
+  tags.forEach(tag => {
+    const el = document.createElement('span');
+    el.className = 'tag' + (activeTag === tag ? ' active' : '');
+    el.textContent = tag;
+    el.onclick = () => { activeTag = (activeTag === tag ? null : tag); refreshTagBar(); filterSections(); };
+    bar.appendChild(el);
+  });
+}
+
+function refreshTagBar() {
+  document.querySelectorAll('.tag').forEach(el => {
+    if (el.textContent === 'Tout') {
+      el.classList.toggle('active', !activeTag);
+    } else {
+      el.classList.toggle('active', el.textContent === activeTag);
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════
+//  SECTIONS RENDER
+// ══════════════════════════════════════════════════
+function renderSections(sections) {
+  const container = document.getElementById('sections-container');
+  container.innerHTML = '';
+
+  if (!sections || sections.length === 0) {
+    document.getElementById('empty-state').classList.add('visible');
+    return;
+  }
+
+  sections.forEach((sec, i) => {
+    const card = document.createElement('div');
+    card.className = 'section-card';
+    card.style.animationDelay = (i * 0.03) + 's';
+    card.dataset.tag = sec.tag || '';
+    card.dataset.num = sec.num || i;
+    card.dataset.title = sec.title || '';
+    card.id = sec.anchor || ('sec-' + (sec.num || i).toString().replace(/\./g, '-'));
+
+    // Header left
+    const numSpan = '<span class="section-num">' + (sec.num || (i+1)) + '</span>';
+    const titleSpan = '<span class="section-title-text">' + (sec.title || '') + '</span>';
+    // Header right
+    const tagSpan = sec.tag ? '<span class="section-tag" data-tag="' + sec.tag + '">' + sec.tag + '</span>' : '';
+    const chevron = '<span class="chevron">&#9660;</span>';
+    // Body
+    const body = (sec.content || '') + '<button class="btn-notebook" onclick="preparerPrompt(this)">&#x1F4AC; Poser une question sur cette règle</button>';
+
+    card.innerHTML =
+      '<div class="section-header" onclick="toggleSection(this.parentElement)">' +
+        '<div class="section-header-left">' + numSpan + titleSpan + '</div>' +
+        '<div class="section-header-right">' + tagSpan + chevron + '</div>' +
+      '</div>' +
+      '<div class="section-body">' + body + '</div>';
+
+    container.appendChild(card);
+  });
+}
+
+function toggleSection(card) { card.classList.toggle('open'); }
+function toggleTheme() {
+  const d = document.body.classList.toggle('dark');
+  document.getElementById('theme-toggle').textContent = d ? '🌙' : '☀️';
+  localStorage.setItem('wgr-theme', d ? 'dark' : 'light');
+}
+if (localStorage.getItem('wgr-theme') === 'dark') { document.body.classList.add('dark'); }
+
+
+function preparerPrompt(btn) {
+  const card = btn.closest('.section-card');
+  const num = card ? card.dataset.num : '';
+  const titre = card ? card.dataset.title : '';
+  const texte = 'Recherche dans la section ' + num + ' (' + titre + ') de mon PDF et réponds à ma question suivante : ';
+  navigator.clipboard.writeText(texte).then(() => {
+    toast('📋 Prompt copié — ouverture NotebookLM...');
+    setTimeout(() => window.open('https://notebooklm.google.com/', '_blank'), 600);
+  }).catch(() => {
+    window.open('https://notebooklm.google.com/', '_blank');
+  });
+}
+
+function scrollToRule(anchorId) {
+  const target = document.getElementById(anchorId);
+  if (!target) return;
+  target.classList.add('open');
+  setTimeout(() => {
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    target.classList.add('highlight');
+    setTimeout(() => target.classList.remove('highlight'), 1800);
+  }, 60);
+}
+
+// ══════════════════════════════════════════════════
+//  SEARCH
+// ══════════════════════════════════════════════════
+function handleSearch() {
+  searchQuery = document.getElementById('search-input').value.trim().toLowerCase();
+  document.getElementById('btn-clear-search').classList.toggle('visible', searchQuery.length > 0);
+  filterSections();
+}
+
+function clearSearch() {
+  document.getElementById('search-input').value = '';
+  searchQuery = '';
+  document.getElementById('btn-clear-search').classList.remove('visible');
+  document.getElementById('search-count').textContent = '';
+  filterSections();
+}
+
+function filterSections() {
+  const game = CATALOGUE_JEUX.find(g => g.id === currentGameId);
+  if (!game) return;
+
+  const cards = document.querySelectorAll('.section-card');
+  let visible = 0;
+
+  cards.forEach((card, i) => {
+    const sec = game.sections[i];
+    if (!sec) return;
+
+    const matchTag = !activeTag || sec.tag === activeTag;
+    let matchSearch = true;
+    let highlightedContent = sec.content || '';
+    let highlightedTitle = sec.title;
+
+    if (searchQuery) {
+      const haystack = `${sec.num} ${sec.title} ${sec.tag} ${sec.content}`.toLowerCase();
+      matchSearch = haystack.includes(searchQuery);
+      if (matchSearch) {
+        const rx = new RegExp(`(${escapeRx(searchQuery)})`, 'gi');
+        highlightedContent = (sec.content || '').replace(rx, '<mark>$1</mark>');
+        highlightedTitle = sec.title.replace(rx, '<mark>$1</mark>');
+        card.classList.add('open');
+      }
+    }
+
+    const show = matchTag && matchSearch;
+    card.style.display = show ? '' : 'none';
+
+    if (show) {
+      visible++;
+      card.querySelector('.section-title-text').innerHTML = highlightedTitle;
+      card.querySelector('.section-body').innerHTML = highlightedContent;
+      if (searchQuery) card.classList.add('highlight');
+      else { card.classList.remove('highlight'); if (!searchQuery) card.classList.remove('open'); }
+    }
+  });
+
+  // Reopen only if search; close all if cleared
+  if (!searchQuery) {
+    document.querySelectorAll('.section-card').forEach(c => {
+      if (c.style.display !== 'none') { c.classList.remove('open'); c.classList.remove('highlight'); }
+    });
+    const sec = game.sections;
+    cards.forEach((card, i) => {
+      if (sec[i]) {
+        card.querySelector('.section-title-text').textContent = sec[i].title;
+        card.querySelector('.section-body').innerHTML = sec[i].content || '';
+      }
+    });
+  }
+
+  const countEl = document.getElementById('search-count');
+  countEl.textContent = searchQuery ? `${visible} résultat${visible !== 1 ? 's' : ''}` : '';
+}
+
+function escapeRx(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// ══════════════════════════════════════════════════
+//  MOBILE SIDEBAR
+// ══════════════════════════════════════════════════
+function toggleSidebar() {
+  sidebarOpen = !sidebarOpen;
+  document.getElementById('sidebar').classList.toggle('mobile-open', sidebarOpen);
+}
+function closeSidebar() {
+  sidebarOpen = false;
+  document.getElementById('sidebar').classList.remove('mobile-open');
+}
+
+// ══════════════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════════════
+let _tt;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(_tt);
+  _tt = setTimeout(() => el.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>
